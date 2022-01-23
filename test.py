@@ -15,15 +15,17 @@ while(True):
     # Display the resulting frame
     cv.imshow('unaltered', frame)
 
-    # Gray scale    
-    grayscaleImage=cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    cv.imshow('gray transform', grayscaleImage)
     
-    # Makes a copy
-    overlayImage=np.copy(frame)
 
+    size_percent = 0.5
+    # Makes a copy
+    overlayImage=np.copy(frame)[int(len(frame) * (1-size_percent) / 2):int(len(frame) * (size_percent + (1-size_percent) / 2)), int(len(frame[0]) * (1-size_percent) / 2):int(len(frame[0]) * (size_percent+(1-size_percent) / 2))]
+    
+    grayscaleImage=cv.cvtColor(overlayImage, cv.COLOR_BGR2GRAY)
     mean = np.mean(grayscaleImage)
-    ret, thresh = cv.threshold(grayscaleImage, 20, 255, cv.THRESH_BINARY)
+
+
+    ret, thresh = cv.threshold(grayscaleImage, min(0.7*mean, 255), 255, cv.THRESH_BINARY)
     cv.imshow('thresh', thresh)
 
     contours, heirarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
