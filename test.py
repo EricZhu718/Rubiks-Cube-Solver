@@ -1,9 +1,9 @@
 # import the opencv library
-import cv2
+import cv2 as cv
   
   
 # define a video capture object
-vid = cv2.VideoCapture(0)
+vid = cv.VideoCapture(0)
   
 while(True):
       
@@ -12,15 +12,28 @@ while(True):
     ret, frame = vid.read()
   
     # Display the resulting frame
-    cv2.imshow('frame', frame)
+    cv.imshow('unaltered', frame)
+    
+    grayscaleImage=cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    cv.imshow('gray transform', grayscaleImage)
+    
+    
+    
+    
+    
+    
+    
     
     # the 'q' button is set as the
     # quitting button you may use any
     # desired button of your choice
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv.waitKey(1) & 0xFF == ord('q'):
         break
-  
+    
+
+
+
 # After the loop release the cap object
 vid.release()
 # Destroy all the windows
-cv2.destroyAllWindows()
+cv.destroyAllWindows()
