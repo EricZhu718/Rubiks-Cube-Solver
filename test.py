@@ -1,5 +1,6 @@
 # import the opencv library
 import cv2 as cv
+import numpy as np
   
   
 # define a video capture object
@@ -13,14 +14,23 @@ while(True):
   
     # Display the resulting frame
     cv.imshow('unaltered', frame)
-    
+
+    # Gray scale    
     grayscaleImage=cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     cv.imshow('gray transform', grayscaleImage)
     
+    # Makes a copy
+    overlayImage=np.copy(frame)
+
+    mean = np.mean(grayscaleImage)
+    ret, thresh = cv.threshold(grayscaleImage, 20, 255, cv.THRESH_BINARY)
+    cv.imshow('thresh', thresh)
+
+    contours, heirarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+    contour_img = cv.drawContours(overlayImage, contours, -1, (0,255,0), 6)
     
     
-    
-    
+    cv.imshow('contours', contour_img)
     
     
     
