@@ -15,8 +15,13 @@ while(True):
   
     # Display the resulting frame
     cv.imshow('unaltered', frame)
-
     
+    copy = frame.copy()
+
+    gray = cv.cvtColor(copy,cv.COLOR_BGR2GRAY)
+    edges = cv.Canny(gray, 50, 150, apertureSize = 3)
+
+    cv.imshow('edges', edges)
 
     size_percent = 1
     # Makes a copy
@@ -43,21 +48,38 @@ while(True):
     cv.imshow('thresh', final_thresh)
 
     final_contour_img = overlayImage.copy()
-    contours_final, _ = cv.findContours(final_thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    
+    combined_img = np.bitwise_and(np.bitwise_not(edges), final_thresh)
+    cv.imshow('thresh and canny', combined_img)
+
+
+    contours_final, _ = cv.findContours(combined_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     for contour in contours_final:
         if cv.contourArea(contour) > 300:
             final_contour_img = cv.drawContours(final_contour_img, [contour], -1, (0,255,0), 3)
-    cv.imshow('contours', final_contour_img)
+    
+    
+    cv.imshow('contours normal', final_contour_img)
     
 
-    copy = frame.copy()
 
-    gray = cv.cvtColor(copy,cv.COLOR_BGR2GRAY)
-    edges = cv.Canny(gray,50,150,apertureSize = 3)
+    rho = 1  # distance resolution in pixels of the Hough grid
+    theta = np.pi / 180  # angular resolution in radians of the Hough grid
+    threshold = 10  # minimum number of votes (intersections in Hough grid cell)
+    min_line_length = 50  # minimum number of pixels making up a line
+    max_line_gap = 15  # maximum gap in pixels between connectable line segments
+    line_image = np.copy(copy)  # creating a blank to draw lines on
 
-    cv.imshow('edges', edges)
+    # Run Hough on edge detected image
+    # Output "lines" is an array containing endpoints of detected line segments
+    lines = cv.HoughLinesP(edges, rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
 
-    
+    for line in lines:
+        for x1,y1,x2,y2 in line:
+            cv.line(line_image, (x1,y1), (x2,y2), (255,0,0), 3)
+
+    cv.imshow('lines', line_image)
+
 
 
 
